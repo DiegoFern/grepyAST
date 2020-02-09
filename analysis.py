@@ -1,5 +1,4 @@
 import ast
-from pprint import pprint
 
 
 def rec_list(xs):
@@ -91,8 +90,8 @@ class aux():
                 def f(node, v):
                     stack = f.a[::-1]
                     while stack:
-                        if (v,stack.pop()) in node:
-                            v=type(node['self'])
+                        if (v, stack.pop()) in node:
+                            v = type(node['self'])
                         else:
                             return False
                     return True
@@ -148,6 +147,7 @@ found.ast = {
             'Assign': (ast.Assign,),
             'Loop': (ast.For, ast.While)
             }
+
 def main():
     import argparse
     parser = argparse.ArgumentParser(description='astgrep')
