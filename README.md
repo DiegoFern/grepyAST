@@ -1,11 +1,11 @@
-grepAst
+grepyAst
 =======
 
 line command tool wich allows to find ast exprexions in python files:
 
 The next example show all the methods in a class in this proyect:
 ```
-$ python grepyAst/analysis.py -e class/def -f ./grepAst/ -a 1 -b 1
+$ python grepyAst/analysis.py -e class/def -f ./grepyAst/ -a 1 -b 1
 
 ('class/def', './analysis/', 1, 1)
 (0.0005740000000000016, './analysis/analysis.py')
