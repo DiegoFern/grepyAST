@@ -1,5 +1,5 @@
 import ast
-
+import itertools
 
 def rec_list(xs):
     try:
@@ -115,25 +115,34 @@ def found(expr, parse, rec=True, n=0, A=5, B=5, ast_symbol=False):
     parseCode = parse.split('\n')
     expr = [aux(name) for name in expr.split('/')]
     parse = recursive_info().REC(ast.parse(parse))[(ast.Module, 'body')]
-    nodes = [(p, expr) for p in parse]
+    nodes = [(p, expr,None) for p in parse]
     points = []
     while nodes:
-        node, expr = nodes.pop()
+        
+        node, expr, pather = nodes.pop()
         v = type(node['self'])
         if (len(expr) == 1) and (v in expr[0]) and (expr[0](node, v)):
+            chain =[node]
+            while pather is not None:
+                chain.append(pather[0])
+                pather = pather[1]
             if not ast_symbol:
-                points.append(node[(v, 'lineno')])
+                v = type(node['self'])
+                
+                points.append([node[(type(node['self']), 'lineno')] for node in chain])
             else:
-                points.append(node)
+                points.append(chain[0])
 
         if expr and (v in expr[0]) and (expr[0](node, v)):
-            nodes.extend(map(lambda x: (x, expr[1:]), node.get((v, 'body'), ())))
+            nodes.extend(map(lambda x: (x, expr[1:], (node,pather)), node.get((v, 'body'), ())))
     for p in sorted(points):
         if ast_symbol:
             yield (ast.dump(p['self']))
             yield ('='*40)
         else:
-            yield ('\n'.join(parseCode[max(0, p-1-B):min(len(parseCode)-1, p-1+A)]))
+            yield ('\n'.join('\n'.join(
+                parseCode[max(0, pn-1-B):min(len(parseCode)-1, pn-1+A)])
+                for pn in p[::-1]))
             yield ('='*40+'{'+str(p)+'}')
 
 
