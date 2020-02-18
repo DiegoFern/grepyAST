@@ -113,7 +113,7 @@ class aux():
 
 def found(expr, parse, rec=True, n=0, A=5, B=5, ast_symbol=False):
     parseCode = parse.split('\n')
-    expr = [aux(name) for name in expr.split('/')]
+    expr = [[aux(a) for a in name.split('|')] for name in expr.split('/')]
     parse = recursive_info().REC(ast.parse(parse))[(ast.Module, 'body')]
     nodes = [(p, expr,None) for p in parse]
     points = []
@@ -121,7 +121,7 @@ def found(expr, parse, rec=True, n=0, A=5, B=5, ast_symbol=False):
         
         node, expr, pather = nodes.pop()
         v = type(node['self'])
-        if (len(expr) == 1) and (v in expr[0]) and (expr[0](node, v)):
+        if (len(expr) == 1) and any( ((v in x) and x(node, v) for x in expr[0])):
             chain =[node]
             while pather is not None:
                 chain.append(pather[0])
@@ -133,7 +133,7 @@ def found(expr, parse, rec=True, n=0, A=5, B=5, ast_symbol=False):
             else:
                 points.append(chain[0])
 
-        if expr and (v in expr[0]) and (expr[0](node, v)):
+        if expr and any( ((v in x) and x(node, v) for x in expr[0])):
             nodes.extend(map(lambda x: (x, expr[1:], (node,pather)), node.get((v, 'body'), ())))
     for p in sorted(points):
         if ast_symbol:
